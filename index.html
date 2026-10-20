@@ -75,6 +75,14 @@ ul.plain li{margin-bottom:6px}
 .c-purple h3{background:#efe6f6;color:#7030a0}
 .c-orange h3{background:#fdeee0;color:#c55a11}
 @media (prefers-color-scheme:dark){.c-purple h3{background:#2e2538;color:#c9a6e6}.c-orange h3{background:#3a2a1d;color:#f0a46a}}
+/* iPad / 宽屏：内容居中限宽，字号略大，底部按钮条跟内容对齐 */
+@media (min-width:700px){
+html,body{font-size:17px}
+body{padding-left:max(24px,calc((100% - 780px)/2));padding-right:max(24px,calc((100% - 780px)/2))}
+header.top{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
+.dock{padding-left:max(24px,calc((100% - 780px)/2));padding-right:max(24px,calc((100% - 780px)/2))}
+.tick{min-width:40px;height:34px}
+}
 </style>
 </head>
 <body>
