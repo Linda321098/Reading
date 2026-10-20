@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="阅读指引">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#faf7f2">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>阅读指引</title>
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#2b2a28;--sub:#6f6a62;--line:#e8e2d8;--accent:#c0504d;--accent-soft:#fbe9e4;--blue:#1f3864;--blue-soft:#e6edf7;--ok:#3f8f5b;--ok-soft:#e3f2e8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1a19;--card:#262523;--ink:#ece8e1;--sub:#a49d92;--line:#3a3834;--accent:#e2766f;--accent-soft:#3b2624;--blue:#9db6e0;--blue-soft:#232c3b;--ok:#73c08e;--ok-soft:#1f3326;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+body{padding:env(safe-area-inset-top,0) 16px calc(env(safe-area-inset-bottom,0) + 88px)}
+a{color:inherit;text-decoration:none}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);margin:0 -16px 12px;padding-left:16px;padding-right:16px}
+header.top h1{font-size:18px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{font-size:15px;color:var(--accent);padding:6px 4px;white-space:nowrap}
+.iconbtn{font-size:14px;color:var(--sub);padding:6px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+input.search{width:100%;font-size:16px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);margin-bottom:14px}
+h2.group{font-size:13px;color:var(--sub);letter-spacing:.08em;margin:18px 2px 8px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.bookcard{display:block}
+.bookcard .t{font-weight:600}
+.bookcard .m{font-size:13px;color:var(--sub);margin-top:2px}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.resume{background:var(--blue-soft);border-color:transparent}
+.resume .m{color:var(--blue)}
+.lead{font-size:15px;color:var(--sub);margin:0 0 6px}
+.lead b{color:var(--blue)}
+.unitrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.unitrow:last-child{border-bottom:0}
+.unitrow a{flex:1;min-width:0}
+.unitrow .n{color:var(--sub);font-size:13px;margin-right:4px}
+.ticks{display:flex;gap:6px;flex-shrink:0}
+.tick{min-width:34px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--sub);font-size:13px;padding:0 6px}
+.tick.on{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sum{font-style:italic;color:var(--sub);margin:4px 0 12px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.sec h3{margin:0;font-size:14px;padding:9px 14px;background:var(--accent-soft);color:var(--accent)}
+.sec .b{padding:10px 14px}
+.sec p{margin:0 0 8px}
+.q{margin-bottom:12px}
+.q .qt{font-weight:600}
+.hint{margin-top:6px;font-size:14px;color:var(--sub);background:var(--bg);border-radius:8px;padding:8px 10px}
+.hintbtn{font-size:13px;color:var(--blue);background:none;border:0;padding:4px 0}
+.lab{color:var(--blue);font-weight:600}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-right:6px}
+textarea.note{width:100%;min-height:90px;font:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(env(safe-area-inset-bottom,0) + 10px);display:flex;gap:8px;align-items:center;z-index:6}
+.dock .tick{height:40px;flex:1;font-size:15px}
+.dock .nav{height:40px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:15px}
+.dock .nav:disabled{opacity:.35}
+ul.plain{padding-left:20px;margin:0}
+ul.plain li{margin-bottom:6px}
+.muted{color:var(--sub);font-size:13px}
+.btn{display:inline-block;padding:9px 14px;border-radius:10px;border:1px solid var(--accent);color:var(--accent);background:var(--card);font-size:15px}
+.hit{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
+.hit .m{font-size:13px;color:var(--sub)}
+.lvbar{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.lv{border:1px solid var(--line);background:var(--card);color:var(--sub);border-radius:999px;padding:4px 12px;font-size:14px}
+.lv.on{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600}
+.star{color:#c9820a;font-weight:700}
+.ty{display:inline-block;font-size:12px;padding:0 6px;border-radius:6px;background:var(--blue-soft);color:var(--blue);margin-right:4px;font-weight:600}
+.tier{border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}.tier:first-child{border-top:0;margin-top:0;padding-top:0}
+.tt{font-weight:600;margin-bottom:2px}
+.c-blue h3{background:var(--blue-soft);color:var(--blue)}
+.c-green h3{background:var(--ok-soft);color:var(--ok)}
+.c-purple h3{background:#efe6f6;color:#7030a0}
+.c-orange h3{background:#fdeee0;color:#c55a11}
+@media (prefers-color-scheme:dark){.c-purple h3{background:#2e2538;color:#c9a6e6}.c-orange h3{background:#3a2a1d;color:#f0a46a}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="data" type="application/json"></script>
+<script>
+// 内容（书和指引卡）存在手机本地 IndexedDB，用“数据包”文件或局域网更新；打勾进度另存 localStorage，更新内容不影响进度
+let DATA = { builtAt: '', howto: [], books: [] }, BOOKS = [], BYID = {};
+function setData(d) { DATA = d; BOOKS = d.books || []; BYID = Object.fromEntries(BOOKS.map(b => [b.id, b])); }
+const isPack = p => !!p && p.format === 'reading-guide-pack' && Array.isArray(p.books);
+const idb = (mode, fn) => new Promise((ok, bad) => {
+  const r = indexedDB.open('rg', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('kv');
+  r.onerror = () => bad(r.error);
+  r.onsuccess = () => { const tx = r.result.transaction('kv', mode); const q = fn(tx.objectStore('kv')); tx.oncomplete = () => ok(q && q.result); tx.onerror = () => bad(tx.error); };
+});
+const loadPack = () => idb('readonly', s => s.get('pack')).catch(() => null);
+const savePack = p => idb('readwrite', s => s.put(p, 'pack'));
+async function usePack(p) { if (!isPack(p)) throw new Error('不是阅读指引数据包'); await savePack(p); setData(p); }
+const timed = (url, ms = 4000) => { const a = new AbortController(); setTimeout(() => a.abort(), ms); return fetch(url, { cache: 'no-store', signal: a.signal }); };
+const KEY = 'rg:v1';
+let S = { p: {}, last: null };
+try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// 打勾进度按“篇名”记录（同一本书里重名的篇加 #序号），电脑上调整顺序、增删篇目后不会对错篇
+function keyOf(b, i) {
+  const us = (BYID[b] || {}).units || [], title = (us[i] || {}).title || String(i);
+  let k = 0; for (let j = 0; j < i; j++) if (us[j].title === title) k++;
+  return k ? title + '#' + k : title;
+}
+const indexOfKey = (b, key) => ((BYID[b] || {}).units || []).findIndex((u, i) => keyOf(b, i) === key);
+const st = (b, i) => ((S.p[b] || {})[keyOf(b, i)]) || {};
+function setSt(b, i, k, v) { const key = keyOf(b, i); S.p[b] = S.p[b] || {}; S.p[b][key] = Object.assign({}, S.p[b][key], { [k]: v }); save(); }
+// 旧版按序号记录的进度：用打勾时的那份内容把序号换成篇名（必须在导入新内容之前做）
+function migrateProgress() {
+  let changed = false;
+  for (const [b, m] of Object.entries(S.p || {})) {
+    if (!BYID[b]) continue;
+    for (const k of Object.keys(m)) {
+      if (!/^\d+$/.test(k) || !BYID[b].units[+k]) continue;
+      const nk = keyOf(b, +k); m[nk] = Object.assign({}, m[k], m[nk]); delete m[k]; changed = true;
+    }
+  }
+  if (S.last && S.last.t === undefined && BYID[S.last.b]) { S.last.t = keyOf(S.last.b, S.last.i); changed = true; }
+  if (changed) save();
+}
+const pct = b => { const n = (b.units || []).length; if (!n) return 0; let d = 0; for (let i = 0; i < n; i++) { const x = st(b.id, i); d += (x.r ? 1 : 0) + (x.s ? 1 : 0) + (x.w ? 1 : 0); } return Math.round(d / (3 * n) * 100); };
+const TK = [['r', '读'], ['s', '说'], ['w', '写']];
+const ticks = (b, i, cls = '') => TK.map(([k, l]) => `<button class="tick ${cls} ${st(b, i)[k] ? 'on' : ''}" data-b="${b}" data-i="${i}" data-k="${k}">${l}</button>`).join('');
+const app = document.getElementById('app');
+
+function home() {
+  if (!BOOKS.length) return welcome();
+  const groups = {};
+  BOOKS.forEach(b => (groups[b.group || '其他'] = groups[b.group || '其他'] || []).push(b));
+  let h = `<header class="top"><h1>阅读·表达·写作指引</h1><a class="iconbtn" href="#/guide">方法</a><a class="iconbtn" href="#/sync">同步</a></header>
+  <input class="search" id="q" placeholder="搜书名、篇名、成语…" autocomplete="off">
+  <div id="res"></div><div id="main">`;
+  const li = S.last && BYID[S.last.b] ? (S.last.t !== undefined ? indexOfKey(S.last.b, S.last.t) : S.last.i) : -1;
+  const L = li >= 0 && BYID[S.last.b].units[li];
+  if (L) h += `<a class="card bookcard resume" href="#/u/${S.last.b}/${li}"><div class="m">继续上次</div><div class="t">${esc(BYID[S.last.b].book)} · ${esc(L.title)}</div></a>`;
+  for (const [g, list] of Object.entries(groups)) {
+    h += `<h2 class="group">${esc(g)}</h2>`;
+    h += list.map(b => `<a class="card bookcard" href="#/b/${b.id}"><div class="t">${esc(b.book)}</div><div class="m">${(b.units || []).length} 个篇目 · 已完成 ${pct(b)}%</div><div class="bar"><i style="width:${pct(b)}%"></i></div></a>`).join('');
+  }
+  app.innerHTML = h + `<p class="muted">生成于 ${esc(DATA.builtAt)}。打勾和记录只保存在这台手机上，可在“同步”页备份。</p></div>`;
+  const q = document.getElementById('q');
+  q.addEventListener('input', () => {
+    const v = q.value.trim();
+    document.getElementById('main').hidden = !!v;
+    if (!v) { document.getElementById('res').innerHTML = ''; return; }
+    const out = [];
+    BOOKS.forEach(b => {
+      if (b.book.includes(v)) out.push(`<a class="hit" href="#/b/${b.id}"><div>${esc(b.book)}</div><div class="m">整本书</div></a>`);
+      (b.units || []).forEach((u, i) => { if ((u.title + (u.summary || '')).includes(v)) out.push(`<a class="hit" href="#/u/${b.id}/${i}"><div>${esc(u.title)}</div><div class="m">${esc(b.book)}</div></a>`); });
+    });
+    document.getElementById('res').innerHTML = out.slice(0, 80).join('') || '<p class="muted">没有找到</p>';
+  });
+}
+
+function book(id) {
+  const b = BYID[id]; if (!b) return home();
+  let h = `<header class="top"><a class="back" href="#/">‹ 书架</a><h1>${esc(b.book)}</h1></header>`;
+  if (b.intro) h += `<p class="lead"><b>怎么读：</b>${esc(b.intro)}</p>`;
+  if (b.skills) h += `<p class="lead"><b>重点能力：</b>${esc(b.skills)}</p>`;
+  h += `<div class="card">` + (b.units || []).map((u, i) => `<div class="unitrow"><a href="#/u/${id}/${i}"><span class="n">${i + 1}</span>${esc(u.title)}</a><div class="ticks">${ticks(id, i)}</div></div>`).join('') + `</div>`;
+  if (b.generic) h += `<a class="card bookcard" href="#/g/${id}"><div class="t">${esc(b.generic.title || '通用指引')}</div><div class="m">适用于没有单独列出的分册</div></a>`;
+  if (b.wrap) h += `<div class="sec"><h3>整本书读完：${esc(b.wrap.title)}</h3><div class="b"><p><span class="lab">口头表达：</span>${esc(b.wrap.oral)}</p><p><span class="lab">写作任务：</span>${esc(b.wrap.writing)}</p><p><span class="lab">家长反馈：</span>${esc(b.wrap.feedback)}</p></div></div>`;
+  app.innerHTML = h;
+}
+
+const STARS = ['', '★', '★★', '★★★'], LVN = ['全部', '起步', '标准', '挑战'];
+const star = l => `<span class="star">${STARS[l] || ''}</span>`;
+// 难度筛选：选 ★★ 时，讨论和口头练习显示 ★ 和 ★★，分级练习只显示 ★★
+const lvOk = (l, exact) => !S.lv || (exact ? l === S.lv : l <= S.lv);
+const lvBar = () => `<div class="lvbar">${[0, 1, 2, 3].map(l => `<button class="lv ${(S.lv || 0) === l ? 'on' : ''}" data-lv="${l}">${l ? STARS[l] + ' ' + LVN[l] : '全部'}</button>`).join('')}</div>`;
+function unitHtml(u) {
+  const w = u.writing || {}, f = u.feedback || {};
+  const sec = (cls, t, body) => `<div class="sec ${cls}"><h3>${t}</h3><div class="b">${body}</div></div>`;
+  return `${u.summary ? `<p class="sum">${esc(u.summary)}</p>` : ''}${lvBar()}
+  ${u.goal ? sec('', '本次目标', `<p><b>${esc(u.goal)}</b></p>`) : ''}
+  ${sec('', '读到这里停', `<p>${esc(u.stop)}</p>`)}
+  ${sec('c-blue', '讨论（家长怎么问）', (u.discuss || []).filter(q => lvOk(q.level)).map((q, i) => `<div class="q"><div class="qt">${star(q.level)} ${q.type ? `<span class="ty">${esc(q.type)}</span>` : ''}${esc(q.q)}</div>${q.hint ? `<button class="hintbtn">说不出来时 ▾</button><div class="hint" hidden>${esc(q.hint)}</div>` : ''}</div>`).join('') || '<p class="muted">这一档没有单独的问题，可选“全部”。</p>')}
+  ${u.stuck ? sec('c-orange', '说不出来时', `<p>${esc(u.stuck)}</p>`) : ''}
+  ${sec('c-green', '口头练习', (u.oral || []).filter(o => lvOk(o.level)).map(o => `<p>${star(o.level)} <span class="tag">${esc(o.type)}</span>${esc(o.task)}</p>`).join('') || '<p class="muted">这一档没有单独的口头任务，可选“全部”。</p>')}
+  ${sec('c-purple', '写作任务', `<p><span class="lab">题目：</span>${esc(w.topic)}</p><p><span class="lab">构思提示：</span>${esc(w.idea)}</p>`)}
+  ${sec('c-purple', '分级练习（选一档做）', (u.tiers || []).filter(t => lvOk(t.level, true)).map(t => `<div class="tier"><div class="tt">${star(t.level)} ${LVN[t.level] || ''}</div><p>${esc(t.task)}</p>${t.scaffold ? `<p><span class="lab">起步支架：</span>${esc(t.scaffold)}</p>` : ''}${t.check ? `<p><span class="lab">进阶与检查：</span>${esc(t.check)}</p>` : ''}</div>`).join(''))}
+  ${sec('c-orange', '家长反馈（只改一处）', `<p><span class="lab">本次只看：</span>${esc(f.focus)}</p><p><span class="lab">怎样修改：</span>${esc(f.revise)}</p>`)}`;
+}
+
+function unit(id, i) {
+  const b = BYID[id]; i = +i; const u = b && b.units[i]; if (!u) return home();
+  S.last = { b: id, i, t: keyOf(id, i) }; save();
+  const n = b.units.length;
+  app.innerHTML = `<header class="top"><a class="back" href="#/b/${id}">‹ 目录</a><h1>${i + 1}. ${esc(u.title)}</h1></header>
+  ${unitHtml(u)}
+  <div class="sec"><h3>记录（孩子说了什么、写了什么）</h3><div class="b"><textarea class="note" id="note" placeholder="可以记下孩子的精彩回答、作品题目、下次要注意的地方">${esc(st(id, i).n || '')}</textarea></div></div>
+  <div class="dock"><button class="nav" ${i ? '' : 'disabled'} onclick="location.hash='#/u/${id}/${i - 1}'">‹</button>${ticks(id, i)}<button class="nav" ${i < n - 1 ? '' : 'disabled'} onclick="location.hash='#/u/${id}/${i + 1}'">›</button></div>`;
+  const note = document.getElementById('note');
+  let t; note.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => setSt(id, i, 'n', note.value), 400); });
+}
+
+function generic(id) {
+  const b = BYID[id]; if (!b || !b.generic) return home();
+  app.innerHTML = `<header class="top"><a class="back" href="#/b/${id}">‹ 目录</a><h1>${esc(b.generic.title || '通用指引')}</h1></header>${unitHtml(b.generic)}`;
+}
+
+function guide() {
+  let h = `<header class="top"><a class="back" href="#/">‹ 书架</a><h1>使用说明与通用方法</h1></header>`;
+  for (const [t, items] of DATA.howto) h += `<div class="sec"><h3>${esc(t)}</h3><div class="b"><ul class="plain">${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
+  app.innerHTML = h;
+}
+
+function sync() {
+  const units = BOOKS.reduce((n, b) => n + (b.units || []).length, 0);
+  const pc = S.pc || (location.protocol === 'https:' && /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname) ? location.origin : '');
+  app.innerHTML = `<header class="top"><a class="back" href="#/">‹ 书架</a><h1>同步与备份</h1></header>
+  <div class="card"><b>当前内容</b><p class="muted">${BOOKS.length ? `${BOOKS.length} 本书、${units} 篇指引卡，电脑生成于 ${esc(DATA.builtAt)}` : '还没有内容'}</p></div>
+  <div class="card"><b>① 导入数据包（推荐，不需要网络）</b>
+    <p>电脑上点“生成手机数据包”，用微信“文件传输助手”发到手机 → 在微信里打开文件 → 右上角“…” → “用其他应用打开” → “存储到‘文件’”。然后回到这里点下面的按钮，选这个文件。打勾和记录会保留。</p>
+    <label class="btn">选择数据包文件<input type="file" id="pk" accept=".json,application/json" hidden></label> <span class="muted" id="pkm"></span></div>
+  <div class="card"><b>② 从电脑同步（可选，需同一 Wi-Fi）</b>
+    <p class="muted">电脑工具的“手机同步”页开启后会显示地址。公司电脑或防火墙拦截时用不了，请用 ①。</p>
+    <input class="search" id="pc" placeholder="例如 https://192.168.1.5:8443" value="${esc(pc)}" style="margin:6px 0">
+    <button class="btn" id="pcb">从电脑同步</button> <span class="muted" id="pcm"></span></div>
+  <div class="card"><b>③ 进度备份</b>
+    <p>打勾和记录只存在这台手机的这个应用里。换手机或删除应用前，先保存一份进度文件。</p>
+    <button class="btn" id="sv">保存进度文件</button> <label class="btn">从文件恢复<input type="file" id="pf" accept=".json,application/json" hidden></label> <span class="muted" id="pm"></span>
+    <details style="margin-top:10px"><summary class="muted">用备份码（复制粘贴）</summary>
+      <button class="btn" id="cp" style="margin-top:8px">复制备份码</button> <span class="muted" id="cpm"></span>
+      <textarea class="note" id="code" readonly style="margin-top:8px">${esc(JSON.stringify(S))}</textarea>
+      <textarea class="note" id="imp" placeholder="把备份码粘贴到这里" style="margin-top:8px"></textarea><p><button class="btn" id="ib">用备份码恢复</button> <span class="muted" id="im"></span></p></details></div>`;
+  const $ = id => document.getElementById(id);
+  const readFile = f => new Promise((ok, bad) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => bad(r.error); r.readAsText(f); });
+  $('pk').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    $('pkm').textContent = '正在导入…';
+    try { await usePack(JSON.parse(await readFile(f))); $('pkm').textContent = `已更新：${BOOKS.length} 本书（生成于 ${DATA.builtAt}）`; }
+    catch (err) { $('pkm').textContent = '导入失败：' + (err.message || '文件不对'); }
+  };
+  $('pcb').onclick = async () => {
+    const base = $('pc').value.trim().replace(/\/+$/, '');
+    if (!base) { $('pcm').textContent = '请先填电脑地址'; return; }
+    $('pcm').textContent = '正在连接…';
+    try {
+      const r = await timed(base + '/data.json', 8000);
+      if (!r.ok) throw new Error('电脑返回 ' + r.status);
+      await usePack(await r.json()); S.pc = base; save();
+      $('pcm').textContent = `已更新：${BOOKS.length} 本书（生成于 ${DATA.builtAt}）`;
+    } catch (err) { $('pcm').textContent = '连不上电脑：请确认同一 Wi-Fi、电脑已开启手机同步；连不上就用 ①。'; }
+  };
+  const progressFile = () => new File([JSON.stringify({ format: 'reading-guide-progress', savedAt: new Date().toLocaleString('zh-CN', { hour12: false }), state: S })], `阅读进度_${new Date().toISOString().slice(0, 10)}.json`, { type: 'application/json' });
+  $('sv').onclick = async () => {
+    const f = progressFile();
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: f.name }); $('pm').textContent = '已打开分享，可选“存储到文件”或发到微信'; return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); $('pm').textContent = '已保存';
+    } catch (err) { if (err.name !== 'AbortError') $('pm').textContent = '没能保存，请用下面的备份码'; }
+  };
+  const restore = v => { if (!v || typeof v.p !== 'object') throw new Error(); S = v; migrateProgress(); save(); };
+  $('pf').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { const j = JSON.parse(await readFile(f)); restore(j.format === 'reading-guide-progress' ? j.state : j); $('pm').textContent = '进度已恢复'; }
+    catch (err) { $('pm').textContent = '这不是进度文件'; }
+  };
+  $('cp').onclick = async () => { const c = $('code'); try { await navigator.clipboard.writeText(c.value); $('cpm').textContent = '已复制'; } catch (e) { c.select(); $('cpm').textContent = '请长按文本框手动复制'; } };
+  $('ib').onclick = () => { try { restore(JSON.parse($('imp').value)); $('im').textContent = '已恢复'; } catch (e) { $('im').textContent = '备份码不对，请检查是否完整'; } };
+}
+
+function welcome() {
+  app.innerHTML = `<header class="top"><h1>阅读·表达·写作指引</h1></header>
+  <div class="card"><p><b>还没有内容。</b></p><p>请在电脑工具的“手机同步”页点“生成手机数据包”，发到手机后在这里导入。</p><a class="btn" href="#/sync">去导入数据包</a></div>`;
+}
+
+app.addEventListener('click', e => {
+  const t = e.target.closest('.tick');
+  if (t) { e.preventDefault(); const v = !st(t.dataset.b, t.dataset.i)[t.dataset.k]; setSt(t.dataset.b, t.dataset.i, t.dataset.k, v); document.querySelectorAll(`.tick[data-b="${t.dataset.b}"][data-i="${t.dataset.i}"][data-k="${t.dataset.k}"]`).forEach(x => x.classList.toggle('on', v)); return; }
+  const lv = e.target.closest('.lv');
+  if (lv) { S.lv = +lv.dataset.lv; save(); const y = scrollY; route(); scrollTo(0, y); return; }
+  const h = e.target.closest('.hintbtn');
+  if (h) { const d = h.nextElementSibling; d.hidden = !d.hidden; h.textContent = d.hidden ? '说不出来时 ▾' : '说不出来时 ▴'; }
+});
+
+function route() {
+  const p = location.hash.replace(/^#\/?/, '').split('/');
+  window.scrollTo(0, 0);
+  if (p[0] === 'b') book(p[1]); else if (p[0] === 'u') unit(p[1], p[2]); else if (p[0] === 'g') generic(p[1]);
+  else if (p[0] === 'guide') guide(); else if (p[0] === 'sync') sync(); else home();
+}
+addEventListener('hashchange', route);
+// 启动：先用手机本地保存的内容；没有时用页面内嵌内容（电脑预览）或同源的 data.json（局域网安装时）
+async function boot() {
+  let p = await loadPack();
+  if (isPack(p)) { setData(p); migrateProgress(); }
+  const emb = document.getElementById('data').textContent.trim();
+  // 页面内嵌了内容（电脑预览）且和本地保存的不同：以页面内嵌的为准，避免预览一直显示旧内容
+  if (emb && emb[0] === '{') { const e = JSON.parse(emb); if (!isPack(p) || p.version !== e.version) { p = e; await savePack(p).catch(() => {}); setData(p); } }
+  if (!isPack(p)) { try { const r = await timed('data.json'); if (r.ok) { p = await r.json(); if (isPack(p)) await savePack(p); } } catch (e) {} }
+  if (isPack(p) && DATA !== p) setData(p);
+  route();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  // 从局域网安装的应用：每次打开顺便检查电脑上有没有新内容（连不上就跳过）
+  if (location.protocol === 'https:' && /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname)) {
+    try { const r = await timed('data.json', 3000); if (r.ok) { const n = await r.json(); if (isPack(n) && n.version !== DATA.version) { await usePack(n); route(); } } } catch (e) {}
+  }
+}
+boot();
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
