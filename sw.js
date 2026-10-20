@@ -1,5 +1,10 @@
-const V='rg-ae3fd889da';
-self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(['./','manifest.json','icon.png'])).then(()=>self.skipWaiting()))});
+const V='rg-e75964943f';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(['./','manifest.json','icon.png'].map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-const net=r=>{const a=new AbortController();setTimeout(()=>a.abort(),3000);return fetch(r,{signal:a.signal})};
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(net(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(r=>r||caches.match('./'))))});
+const cached=r=>caches.match(r,{ignoreSearch:true}).then(x=>x||(r.mode==='navigate'?caches.match('./'):undefined));
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
+const net=fetch(r,{cache:'no-cache'}).then(res=>{if(res.ok){const c=res.clone();e.waitUntil(caches.open(V).then(x=>x.put(r,c)))}return res});
+e.waitUntil(net.then(()=>{},()=>{}));
+e.respondWith(new Promise(ok=>{let done=false;const give=x=>{if(x&&!done){done=true;ok(x)}};
+setTimeout(()=>cached(r).then(give),3000);
+net.then(give,()=>cached(r).then(x=>{give(x);if(!done){done=true;ok(Response.error())}}))}))});

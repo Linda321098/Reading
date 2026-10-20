@@ -75,6 +75,9 @@ ul.plain li{margin-bottom:6px}
 .c-purple h3{background:#efe6f6;color:#7030a0}
 .c-orange h3{background:#fdeee0;color:#c55a11}
 @media (prefers-color-scheme:dark){.c-purple h3{background:#2e2538;color:#c9a6e6}.c-orange h3{background:#3a2a1d;color:#f0a46a}}
+.upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0) + 72px);z-index:9;background:var(--blue);color:var(--card);border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:15px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.upd button{flex-shrink:0;border:0;border-radius:8px;padding:6px 12px;background:var(--card);color:var(--blue);font-weight:600;font-size:14px}
+#upd+#schema,#schema+#upd{bottom:calc(env(safe-area-inset-bottom,0) + 140px)}
 /* iPad / 宽屏：内容居中限宽，字号略大，底部按钮条跟内容对齐 */
 @media (min-width:700px){
 html,body{font-size:17px}
@@ -90,9 +93,24 @@ header.top{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:
 <script id="data" type="application/json"></script>
 <script>
 // 内容（书和指引卡）存在手机本地 IndexedDB，用“数据包”文件或局域网更新；打勾进度另存 localStorage，更新内容不影响进度
+const APP_VERSION = 'bff395';
+// 这个程序能显示的内容结构版本；数据包的 schema 更高时，说明要先更新程序才能显示新内容
+const APP_SCHEMA = 2;
 let DATA = { builtAt: '', howto: [], books: [] }, BOOKS = [], BYID = {};
-function setData(d) { DATA = d; BOOKS = d.books || []; BYID = Object.fromEntries(BOOKS.map(b => [b.id, b])); }
+function setData(d) { DATA = d; BOOKS = d.books || []; BYID = Object.fromEntries(BOOKS.map(b => [b.id, b])); checkSchema(); }
 const isPack = p => !!p && p.format === 'reading-guide-pack' && Array.isArray(p.books);
+// 页面底部的提示条（程序已更新 / 需要更新程序）
+function banner(id, html, btn, fn) {
+  let d = document.getElementById(id);
+  if (!d) { d = document.createElement('div'); d.id = id; d.className = 'upd'; document.body.appendChild(d); }
+  d.innerHTML = `<span>${html}</span>${btn ? `<button>${btn}</button>` : ''}`;
+  if (btn) d.querySelector('button').onclick = fn;
+}
+const needNewApp = () => (DATA.schema || 1) > APP_SCHEMA;
+function checkSchema() {
+  if (needNewApp()) banner('schema', '这份内容需要新版程序才能完整显示。请联网，从后台把应用上滑关掉，再重新打开。', '现在刷新', () => location.reload());
+  else { const d = document.getElementById('schema'); if (d) d.remove(); }
+}
 const idb = (mode, fn) => new Promise((ok, bad) => {
   const r = indexedDB.open('rg', 1);
   r.onupgradeneeded = () => r.result.createObjectStore('kv');
@@ -226,7 +244,7 @@ function sync() {
   const units = BOOKS.reduce((n, b) => n + (b.units || []).length, 0);
   const pc = S.pc || (location.protocol === 'https:' && /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname) ? location.origin : '');
   app.innerHTML = `<header class="top"><a class="back" href="#/">‹ 书架</a><h1>同步与备份</h1></header>
-  <div class="card"><b>当前内容</b><p class="muted">${BOOKS.length ? `${BOOKS.length} 本书、${units} 篇指引卡，电脑生成于 ${esc(DATA.builtAt)}` : '还没有内容'}</p></div>
+  <div class="card"><b>当前内容</b><p class="muted">${BOOKS.length ? `${BOOKS.length} 本书、${units} 篇指引卡，电脑生成于 ${esc(DATA.builtAt)}` : '还没有内容'}<br>程序版本：${APP_VERSION}${needNewApp() ? '（内容需要更新程序，请联网后关掉应用再打开）' : ''}</p></div>
   <div class="card"><b>① 导入数据包（推荐，不需要网络）</b>
     <p>电脑上点“生成手机数据包”，用微信“文件传输助手”发到手机 → 在微信里打开文件 → 右上角“…” → “用其他应用打开” → “存储到‘文件’”。然后回到这里点下面的按钮，选这个文件。打勾和记录会保留。</p>
     <label class="btn">选择数据包文件<input type="file" id="pk" accept=".json,application/json" hidden></label> <span class="muted" id="pkm"></span></div>
@@ -316,7 +334,17 @@ async function boot() {
   }
 }
 boot();
-if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+// 程序更新：iOS 主屏幕应用从后台切回时不会重新加载页面，所以切回时主动检查一次新程序；
+// 新程序接管后提示刷新（第一次安装时不提示）
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) banner('upd', '程序已更新到新版本。', '立即刷新', () => location.reload());
+  });
+}
 </script>
 </body>
 </html>
