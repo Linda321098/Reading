@@ -1,4 +1,4 @@
-const V='rg-f6cccd8e4f';
+const V='rg-e8a9162ff2';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(['./','manifest.json','icon.png'])).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 const net=r=>{const a=new AbortController();setTimeout(()=>a.abort(),3000);return fetch(r,{signal:a.signal})};

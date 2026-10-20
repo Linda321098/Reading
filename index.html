@@ -189,7 +189,7 @@ function unitHtml(u) {
   ${sec('c-blue', '讨论（家长怎么问）', (u.discuss || []).filter(q => lvOk(q.level)).map((q, i) => `<div class="q"><div class="qt">${star(q.level)} ${q.type ? `<span class="ty">${esc(q.type)}</span>` : ''}${esc(q.q)}</div>${q.hint ? `<button class="hintbtn">说不出来时 ▾</button><div class="hint" hidden>${esc(q.hint)}</div>` : ''}</div>`).join('') || '<p class="muted">这一档没有单独的问题，可选“全部”。</p>')}
   ${u.stuck ? sec('c-orange', '说不出来时', `<p>${esc(u.stuck)}</p>`) : ''}
   ${sec('c-green', '口头练习', (u.oral || []).filter(o => lvOk(o.level)).map(o => `<p>${star(o.level)} <span class="tag">${esc(o.type)}</span>${esc(o.task)}</p>`).join('') || '<p class="muted">这一档没有单独的口头任务，可选“全部”。</p>')}
-  ${sec('c-purple', '写作任务', `<p><span class="lab">题目：</span>${esc(w.topic)}</p><p><span class="lab">构思提示：</span>${esc(w.idea)}</p>`)}
+  ${sec('c-purple', '写作任务', `<p><span class="lab">题目：</span>${esc(w.topic)}</p><p><span class="lab">构思提示：</span>${esc(w.idea)}</p>${w.reflect ? `<p><span class="lab">读后感：</span>${esc(w.reflect)}</p>` : ''}`)}
   ${sec('c-purple', '分级练习（选一档做）', (u.tiers || []).filter(t => lvOk(t.level, true)).map(t => `<div class="tier"><div class="tt">${star(t.level)} ${LVN[t.level] || ''}</div><p>${esc(t.task)}</p>${t.scaffold ? `<p><span class="lab">起步支架：</span>${esc(t.scaffold)}</p>` : ''}${t.check ? `<p><span class="lab">进阶与检查：</span>${esc(t.check)}</p>` : ''}</div>`).join(''))}
   ${sec('c-orange', '家长反馈（只改一处）', `<p><span class="lab">本次只看：</span>${esc(f.focus)}</p><p><span class="lab">怎样修改：</span>${esc(f.revise)}</p>`)}`;
 }
